@@ -13,6 +13,7 @@ Image.h
 set (INCLUDE_DIR
 tinyusdz/src
 tinyusdz/src/external
+tinyusdz/src/external/jsonhpp/nlohmann
 glm/glm
 crc64
 .
