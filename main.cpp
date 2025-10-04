@@ -152,8 +152,15 @@ int main(int argc, char* argv[])
 
 	printf("Stage has %zu root prim(s)\n", stage.root_prims().size());
 
+	// Check if root_prims() returns a valid reference
+	const auto& prims = stage.root_prims();
+	printf("Root prims vector size: %zu, capacity: %zu\n", prims.size(), prims.capacity());
+	printf("Root prims data pointer: %p\n", (void*)prims.data());
+
+	printf("Getting stage metadata...\n");
 	double time_codes_per_sec = stage.metas().timeCodesPerSecond.get_value();
 	auto upAxis = stage.metas().upAxis.get_value();
+	printf("Metadata retrieved. upAxis=%d\n", (int)upAxis);
 
 	glm::quat axis_rot = glm::identity<glm::quat>();
 	if (upAxis == tinyusdz::Axis::X)
@@ -167,7 +174,9 @@ int main(int argc, char* argv[])
 		axis_rot = rot;
 	}
 
+	printf("Getting root prim...\n");
 	tinyusdz::Prim* root_prim = &stage.root_prims()[0];
+	printf("Root prim name: %s\n", root_prim->element_name().c_str());
 	
 	tinygltf::Model m_out;	
 	m_out.scenes.resize(1);
@@ -2249,6 +2258,11 @@ int main(int argc, char* argv[])
 						values[j] = glm::vec3(tran_in[0], tran_in[1], tran_in[2]);
 					}
 
+					if (times.empty()) {
+						// Skip animation if no keyframes
+						continue;
+					}
+
 					float t0 = times[0];
 					float t1 = times[times.size() - 1];
 
@@ -2334,6 +2348,11 @@ int main(int argc, char* argv[])
 						times[j] = (float)(rotations[j].t / time_codes_per_sec);
 						auto rot_in = rotations[j].value[i];
 						values[j] = glm::quat(rot_in.real, rot_in.imag[0], rot_in.imag[1], rot_in.imag[2]);
+					}
+
+					if (times.empty()) {
+						// Skip animation if no keyframes
+						continue;
 					}
 
 					float t0 = times[0];
@@ -2429,6 +2448,11 @@ int main(int argc, char* argv[])
 						times[j] = (float)(scales[j].t / time_codes_per_sec);
 						auto scale_in = scales[j].value[i];
 						values[j] = glm::vec3(half_to_float(scale_in[0]), half_to_float(scale_in[1]), half_to_float(scale_in[2]));
+					}
+
+					if (times.empty()) {
+						// Skip animation if no keyframes
+						continue;
 					}
 
 					float t0 = times[0];
@@ -2571,7 +2595,12 @@ int main(int argc, char* argv[])
 
 					anim_out.samplers.resize(id_sampler + 1);
 					tinygltf::AnimationSampler& sampler = anim_out.samplers[id_sampler];
-					
+
+					if (mchan.times.empty()) {
+						// Skip morph animation if no keyframes
+						continue;
+					}
+
 					float t0 = mchan.times[0];
 					float t1 = mchan.times[mchan.times.size() - 1];
 
