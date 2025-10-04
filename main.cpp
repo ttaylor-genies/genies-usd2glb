@@ -81,8 +81,9 @@ int main(int argc, char* argv[])
 
 	tinyusdz::Stage stage;
 	tinyusdz::USDLoadOptions options;
-	options.load_assets = false;
-	bool ret = tinyusdz::LoadUSDCFromFile(argv[1], &stage, &warn, &err, options);
+	options.load_assets = true;
+	options.do_composition = true;
+	bool ret = tinyusdz::LoadUSDFromFile(argv[1], &stage, &warn, &err, options);
 	if (!ret)
 	{
 		printf("%s\n", warn.c_str());
