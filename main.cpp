@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 
 			auto* material_in = prim.prim->data().as<tinyusdz::Material>();
 			material_mid.name = material_in->name;
-			std::string outputs_surface = material_in->surface->target.value().prim_part();
+			std::string outputs_surface = material_in->surface.get_connections()[0].prim_part();
 			const tinyusdz::Prim* pshader0 = stage.GetPrimAtPath(tinyusdz::Path(outputs_surface, "")).value();
 			auto* shader0 = pshader0->data().as<tinyusdz::Shader>();
 			auto* surface = shader0->value.as<tinyusdz::UsdPreviewSurface>();
@@ -188,17 +188,17 @@ int main(int argc, char* argv[])
 							const tinyusdz::Prim* pshader2 = stage.GetPrimAtPath(tinyusdz::Path(path_uv, "")).value();
 							auto* shader2 = pshader2->data().as<tinyusdz::Shader>();
 							auto* uvset = shader2->value.as<tinyusdz::UsdPrimvarReader_float2>();
-							tinyusdz::value::token token_uv;
+							std::string token_uv;
 							uvset->varname.get_value().value().get_scalar(&token_uv);
-							material_mid.uvset = token_uv.str();
+							material_mid.uvset = token_uv;
 						}
 					}
 					else if (shader1->value.type_id() == tinyusdz::value::TYPE_ID_IMAGING_PRIMVAR_READER_FLOAT3)
 					{
 						auto* reader = shader1->value.as<tinyusdz::UsdPrimvarReader_float3>();						
-						tinyusdz::value::token varname;
+						std::string varname;
 						reader->varname.get_value().value().get_scalar(&varname);
-						material_mid.diffuse_varname = varname.str();
+						material_mid.diffuse_varname = varname;
 					}
 					material_mid.diffuse_color = { 1.0f, 1.0f, 1.0f };
 				}
@@ -231,9 +231,9 @@ int main(int argc, char* argv[])
 						const tinyusdz::Prim* pshader2 = stage.GetPrimAtPath(tinyusdz::Path(path_uv, "")).value();
 						auto* shader2 = pshader2->data().as<tinyusdz::Shader>();
 						auto* uvset = shader2->value.as<tinyusdz::UsdPrimvarReader_float2>();
-						tinyusdz::value::token token_uv;
+						std::string token_uv;
 						uvset->varname.get_value().value().get_scalar(&token_uv);
-						material_mid.uvset = token_uv.str();
+						material_mid.uvset = token_uv;
 					}
 					material_mid.emissive_color = { 1.0f, 1.0f, 1.0f };
 				}
@@ -266,9 +266,9 @@ int main(int argc, char* argv[])
 						const tinyusdz::Prim* pshader2 = stage.GetPrimAtPath(tinyusdz::Path(path_uv, "")).value();
 						auto* shader2 = pshader2->data().as<tinyusdz::Shader>();
 						auto* uvset = shader2->value.as<tinyusdz::UsdPrimvarReader_float2>();
-						tinyusdz::value::token token_uv;
+						std::string token_uv;
 						uvset->varname.get_value().value().get_scalar(&token_uv);
-						material_mid.uvset = token_uv.str();
+						material_mid.uvset = token_uv;
 					}
 					material_mid.specular_color = { 1.0f, 1.0f, 1.0f };
 				}			
@@ -301,9 +301,9 @@ int main(int argc, char* argv[])
 						const tinyusdz::Prim* pshader2 = stage.GetPrimAtPath(tinyusdz::Path(path_uv, "")).value();
 						auto* shader2 = pshader2->data().as<tinyusdz::Shader>();
 						auto* uvset = shader2->value.as<tinyusdz::UsdPrimvarReader_float2>();
-						tinyusdz::value::token token_uv;
+						std::string token_uv;
 						uvset->varname.get_value().value().get_scalar(&token_uv);
-						material_mid.uvset = token_uv.str();
+						material_mid.uvset = token_uv;
 					}
 				}
 				else
@@ -332,9 +332,9 @@ int main(int argc, char* argv[])
 						const tinyusdz::Prim* pshader2 = stage.GetPrimAtPath(tinyusdz::Path(path_uv, "")).value();
 						auto* shader2 = pshader2->data().as<tinyusdz::Shader>();
 						auto* uvset = shader2->value.as<tinyusdz::UsdPrimvarReader_float2>();
-						tinyusdz::value::token token_uv;
+						std::string token_uv;
 						uvset->varname.get_value().value().get_scalar(&token_uv);
-						material_mid.uvset = token_uv.str();
+						material_mid.uvset = token_uv;
 					}
 				}
 				else
@@ -363,9 +363,9 @@ int main(int argc, char* argv[])
 						const tinyusdz::Prim* pshader2 = stage.GetPrimAtPath(tinyusdz::Path(path_uv, "")).value();
 						auto* shader2 = pshader2->data().as<tinyusdz::Shader>();
 						auto* uvset = shader2->value.as<tinyusdz::UsdPrimvarReader_float2>();
-						tinyusdz::value::token token_uv;
+						std::string token_uv;
 						uvset->varname.get_value().value().get_scalar(&token_uv);
-						material_mid.uvset = token_uv.str();
+						material_mid.uvset = token_uv;
 					}
 				}
 				else
