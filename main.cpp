@@ -1,9 +1,11 @@
-#define NOMINMAX 
+#define NOMINMAX
 #include <cstdio>
 #include <tinyusdz.hh>
 #include <usdShade.hh>
 #include <usdSkel.hh>
 #include <usda-writer.hh>
+#include <composition.hh>
+#include <io-util.hh>
 
 #define TINYGLTF_IMPLEMENTATION
 #include <tiny_gltf.h>
@@ -79,16 +81,66 @@ int main(int argc, char* argv[])
 	std::string warn;
 	std::string err;
 
-	tinyusdz::Stage stage;
+	// Get base directory for asset resolution
+	std::string base_dir = tinyusdz::io::GetBaseDir(argv[1]);
+	printf("Base directory for asset resolution: %s\n", base_dir.c_str());
+
+	// Load USD as Layer (not Stage) to enable composition
+	printf("Loading USD file as Layer...\n");
+	tinyusdz::Layer root_layer;
 	tinyusdz::USDLoadOptions options;
 	options.load_assets = true;
 	options.do_composition = true;
-	bool ret = tinyusdz::LoadUSDFromFile(argv[1], &stage, &warn, &err, options);
+
+	bool ret = tinyusdz::LoadLayerFromFile(argv[1], &root_layer, &warn, &err, options);
 	if (!ret)
 	{
-		printf("%s\n", warn.c_str());
+		printf("Failed to load USD as Layer: %s\n", warn.c_str());
 		printf("%s\n", err.c_str());
 		return 0;
+	}
+
+	printf("Layer loaded successfully. Setting up asset resolver...\n");
+
+	// Setup asset resolver for finding referenced files
+	tinyusdz::AssetResolutionResolver resolver;
+	resolver.set_current_working_path(base_dir);
+	resolver.set_search_paths({base_dir});
+
+	printf("Compositing sublayers...\n");
+	// Compose sublayers (recursively loads and flattens @./file.usd@ references)
+	tinyusdz::Layer composited_layer;
+	if (!tinyusdz::CompositeSublayers(resolver, root_layer, &composited_layer, &warn, &err)) {
+		printf("Failed to composite sublayers: %s\n", err.c_str());
+		if (warn.size()) {
+			printf("WARN: %s\n", warn.c_str());
+		}
+		return 0;
+	}
+
+	if (warn.size()) {
+		printf("Composition warnings: %s\n", warn.c_str());
+	}
+
+	printf("Converting composited Layer to Stage...\n");
+	// Convert composited Layer to Stage
+	tinyusdz::Stage stage;
+	if (!tinyusdz::LayerToStage(composited_layer, &stage, &warn, &err)) {
+		printf("Failed to convert Layer to Stage: %s\n", err.c_str());
+		if (warn.size()) {
+			printf("WARN: %s\n", warn.c_str());
+		}
+		return 0;
+	}
+
+	printf("Stage created successfully from composited layers!\n");
+
+	if (warn.size()) {
+		printf("Stage conversion warnings: %s\n", warn.c_str());
+	}
+
+	if (err.size()) {
+		printf("Errors: %s\n", err.c_str());
 	}
 
 	// tinyusdz::usda::SaveAsUSDA("output.usda", stage, &warn, &err);
