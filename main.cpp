@@ -144,7 +144,14 @@ int main(int argc, char* argv[])
 	}
 
 	// tinyusdz::usda::SaveAsUSDA("output.usda", stage, &warn, &err);
-	
+
+	if (stage.root_prims().empty()) {
+		printf("ERROR: Stage has no root prims after composition!\n");
+		return 0;
+	}
+
+	printf("Stage has %zu root prim(s)\n", stage.root_prims().size());
+
 	double time_codes_per_sec = stage.metas().timeCodesPerSecond.get_value();
 	auto upAxis = stage.metas().upAxis.get_value();
 
@@ -159,7 +166,7 @@ int main(int argc, char* argv[])
 		glm::mat4 rot = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
 		axis_rot = rot;
 	}
-	
+
 	tinyusdz::Prim* root_prim = &stage.root_prims()[0];
 	
 	tinygltf::Model m_out;	
