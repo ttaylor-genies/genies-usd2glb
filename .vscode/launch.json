@@ -7,13 +7,14 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/Debug/usd2glb.exe",
       "args": [
-        "C:/path/to/your/avatar.usd",
+        "C:/Users/ttaylor/Downloads/avatarusdz/avatar.usd",
         "output.glb"
       ],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
+      "cwd": "C:/Users/ttaylor/Downloads/avatarusdz",
       "environment": [],
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build Debug"
     }
   ]
 }

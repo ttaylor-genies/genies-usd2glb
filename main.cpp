@@ -2679,9 +2679,16 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	printf("Writing GLB file to: %s\n", argv[2]);
 	tinygltf::TinyGLTF gltf;
-	gltf.WriteGltfSceneToFile(&m_out, argv[2], true, true, false, true);
+	bool success = gltf.WriteGltfSceneToFile(&m_out, argv[2], true, true, false, true);
 
+	if (!success) {
+		printf("ERROR: Failed to write GLB file!\n");
+		return 1;
+	}
+
+	printf("GLB file written successfully!\n");
 	return 0;
 }
 #endif
